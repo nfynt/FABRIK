@@ -1,9 +1,11 @@
-Library/*.*
-obj/*.*
-Packages/*.*
-Temp/*.*
+Library/
+obj/
+Packages/
+Temp/
+.vs/
 
 
 *.suo
 *.sln
 *.md
+*.csproj
