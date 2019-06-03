@@ -1,0 +1,9 @@
+Library/*.*
+obj/*.*
+Packages/*.*
+Temp/*.*
+
+
+*.suo
+*.sln
+*.md
