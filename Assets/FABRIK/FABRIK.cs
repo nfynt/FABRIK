@@ -9,14 +9,14 @@ public class FABRIK : MonoBehaviour
     private GameObject rootObject;
     private FABRIKChain rootChain;
 
-    private List<FABRIKChain> chains = new List<FABRIKChain>();
+    public List<FABRIKChain> chains = new List<FABRIKChain>();
     private Dictionary<string, FABRIKChain> endChains = new Dictionary<string, FABRIKChain>();
 
     public void CreateSystem()
     {
         CreateSystem(transform);
 
-        AssetDatabase.SaveAssets();
+        //AssetDatabase.SaveAssets();
     }
 
     protected void CreateSystem(Transform transform)
@@ -78,7 +78,10 @@ public class FABRIK : MonoBehaviour
         {
             chain.CalculateSummedWeight();
         }
-    }
+		//Debug.Log(chains.Count);
+		SetFirstChain();
+
+	}
 
     private FABRIKChain LoadSystem(Transform transform, FABRIKChain parent = null, int layer = 0)
     {
@@ -150,6 +153,18 @@ public class FABRIK : MonoBehaviour
     public virtual void OnFABRIK()
     {
     }
+
+	public virtual void SetFirstChain()
+	{
+	}
+	
+	public Transform GetRootTransform()
+	{
+		if (rootObject != null)
+			return rootObject.transform;
+
+		return null;
+	}
 
     public void Solve()
     {

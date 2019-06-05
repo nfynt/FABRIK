@@ -181,14 +181,14 @@ public class FABRIKEffector : MonoBehaviour
         Debug.DrawLine(vertices[2], vertices[3], Color.red, 0.0F, false);
         Debug.DrawLine(vertices[3], vertices[0], Color.red, 0.0F, false);
 
-        Debug.DrawLine(vertices[4], vertices[5], Color.red, 0.0F, false);
-        Debug.DrawLine(vertices[5], vertices[6], Color.red, 0.0F, false);
-        Debug.DrawLine(vertices[6], vertices[7], Color.red, 0.0F, false);
-        Debug.DrawLine(vertices[7], vertices[4], Color.red, 0.0F, false);
+        Debug.DrawLine(vertices[4], vertices[5], Color.green, 0.0F, false);
+        Debug.DrawLine(vertices[5], vertices[6], Color.green, 0.0F, false);
+        Debug.DrawLine(vertices[6], vertices[7], Color.green, 0.0F, false);
+        Debug.DrawLine(vertices[7], vertices[4], Color.green, 0.0F, false);
 
-        Debug.DrawLine(vertices[0], vertices[6], Color.red, 0.0F, false);
-        Debug.DrawLine(vertices[1], vertices[7], Color.red, 0.0F, false);
-        Debug.DrawLine(vertices[2], vertices[4], Color.red, 0.0F, false);
-        Debug.DrawLine(vertices[3], vertices[5], Color.red, 0.0F, false);
+        Debug.DrawLine(vertices[0], vertices[6], Color.blue, 0.0F, false);
+        Debug.DrawLine(vertices[1], vertices[7], Color.blue, 0.0F, false);
+        Debug.DrawLine(vertices[2], vertices[4], Color.blue, 0.0F, false);
+        Debug.DrawLine(vertices[3], vertices[5], Color.blue, 0.0F, false);
     }
 }
