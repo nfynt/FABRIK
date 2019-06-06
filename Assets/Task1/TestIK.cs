@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,6 +22,11 @@ public class TestIK : FABRIK {
 		right.Target = Vector3.MoveTowards(right.EndEffector.Position, target.position, step);
 
 		UpdateLinks();
+		if (Input.GetKeyDown(KeyCode.P))
+		{
+			float dist = 0f;
+			Debug.Log(TargetReachable(ref dist).ToString() + "__" + dist.ToString());
+		}
 	}
 
 	public override void SetFirstChain()
@@ -64,5 +70,43 @@ public class TestIK : FABRIK {
 			chainLinks[i].GetComponent<LineRenderer>().SetPosition(0, firstChain[i].position);
 			chainLinks[i].GetComponent<LineRenderer>().SetPosition(1, firstChain[i + 1].position);
 		}
+	}
+
+	//is target reached
+	//squared distance of target from end effector
+	public bool TargetReachable(ref float dist)
+	{
+		dist = (firstChain[firstChain.Count - 1].position - target.position).sqrMagnitude;
+		Math.Round(dist, 3);
+
+		if (dist <= 0.11f)
+			return true;
+		else
+			return false;
+	}
+	
+	public float[] GetLinkAngles()
+	{
+		float[] ang = new float[firstChain.Count - 1];
+		
+		Transform curr = firstChain[0];
+		int i = 0;
+
+		while(curr!=null && curr.childCount>0)
+		{
+			ang[i++] = curr.eulerAngles.y;
+
+			if (i >= firstChain.Count - 1)
+				break;
+
+			curr = firstChain[i];
+		}
+
+		return ang;
+	}
+
+	public int ChainLength()
+	{
+		return chainLen;
 	}
 }
