@@ -22,11 +22,11 @@ public class TestIK : FABRIK {
 		right.Target = Vector3.MoveTowards(right.EndEffector.Position, target.position, step);
 
 		UpdateLinks();
-		if (Input.GetKeyDown(KeyCode.P))
-		{
-			float dist = 0f;
-			Debug.Log(TargetReachable(ref dist).ToString() + "__" + dist.ToString());
-		}
+		//if (Input.GetKeyDown(KeyCode.P))
+		//{
+		//	float dist = 0f;
+		//	Debug.Log(TargetReachable(ref dist).ToString() + "__" + dist.ToString());
+		//}
 	}
 
 	public override void SetFirstChain()

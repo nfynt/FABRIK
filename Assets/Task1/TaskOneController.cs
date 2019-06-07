@@ -26,6 +26,8 @@ public class TaskOneController : MonoBehaviour {
 	[Header("Heatmap panel options")]
 	public GameObject heatWaitPanel;
 	public GameObject heatmapQuad;
+	[Space(10)]
+	public ViewMode currMode = ViewMode.Default;
 
 	//Simulation params
 	private float simX, simY;
@@ -37,7 +39,7 @@ public class TaskOneController : MonoBehaviour {
 	private float[,] targetDistValues;
 	private bool allCalculated = false;
 	private int indMid;
-	public ViewMode currMode = ViewMode.Default;
+	private int incre = 0;
 
 	private void Start()
 	{
@@ -53,10 +55,14 @@ public class TaskOneController : MonoBehaviour {
 		targetDistValues = new float[gridProp.max * 2 + 1, gridProp.max * 2 + 1];
 
 		indMid = (gridProp.max - gridProp.min) / 2;
+		incre = 0;
 	}
 
 	IEnumerator SimulateTargetMotion()
 	{
+		if (incre == 0)
+			incre = 1;
+
 		chainRoot.target.position = new Vector3(simX, 0, simY);
 
 		yield return new WaitForSeconds(simWaitTime);
@@ -80,15 +86,21 @@ public class TaskOneController : MonoBehaviour {
 			+ "\n" + "Dist: " + targetDistValues[(int)simX + indMid, (int)simY + indMid].ToString("F2") + 
 			"; Reach: " + reachability[(int)simX + indMid, (int)simY + indMid].ToString();
 
-		if (simX>=gridProp.max)
-		{
-			simX = gridProp.min;
-			simY++;
-		}
-		else
-		{
-			simX++;
-		}
+		
+			simX+=incre;
+			if(simX<gridProp.min)
+			{
+				simX = gridProp.min;
+				simY++;
+				incre = 1;
+			}
+			else if (simX > gridProp.max)
+			{
+				simX = gridProp.max;
+				incre = -1;
+				simY++;
+			}
+		
 		//yield return new WaitForEndOfFrame();
 		if (simX <= gridProp.max && simY <= gridProp.max)
 			StartCoroutine(SimulateTargetMotion());
@@ -105,6 +117,7 @@ public class TaskOneController : MonoBehaviour {
 				heatWaitPanel.SetActive(false);
 				PrepareHeatMap();
 			}
+			incre = 0;
 		}
 
 	}
@@ -129,23 +142,23 @@ public class TaskOneController : MonoBehaviour {
 				//Debug.Log(((int)i - indMid).ToString() + "," + ((int)j - indMid).ToString() + "--" + boneAngleValues[i, j, 1].ToString());
 				if (i==0 && j==0)
 				{
-					angleRowContainer.GetChild(i*j).gameObject.SetActive(true);
-					angleRowContainer.GetChild(i * j).GetChild(0).GetComponent<Text>().text = "(" + (i - indMid).ToString() + "," + (j - indMid).ToString() + ")";
+					angleRowContainer.GetChild(i*j+1).gameObject.SetActive(true);
+					angleRowContainer.GetChild(i * j + 1).GetChild(0).GetComponent<Text>().text = "(" + (i - indMid).ToString() + "," + (j - indMid).ToString() + ")";
 					if (reachability[i, j])
 					{
-						angleRowContainer.GetChild(i * j).GetChild(1).GetComponent<Text>().text = boneAngleValues[i, j, 1].ToString();
-						angleRowContainer.GetChild(i * j).GetChild(2).GetComponent<Text>().text = boneAngleValues[i, j, 2].ToString();
-						angleRowContainer.GetChild(i * j).GetChild(3).GetComponent<Text>().text = boneAngleValues[i, j, 3].ToString();
-						angleRowContainer.GetChild(i * j).GetChild(4).GetComponent<Text>().text = boneAngleValues[i, j, 4].ToString();
-						angleRowContainer.GetChild(i * j).GetChild(5).GetComponent<Text>().text = boneAngleValues[i, j, 5].ToString();
+						angleRowContainer.GetChild(i * j + 1).GetChild(1).GetComponent<Text>().text = boneAngleValues[i, j, 1].ToString();
+						angleRowContainer.GetChild(i * j + 1).GetChild(2).GetComponent<Text>().text = boneAngleValues[i, j, 2].ToString();
+						angleRowContainer.GetChild(i * j + 1).GetChild(3).GetComponent<Text>().text = boneAngleValues[i, j, 3].ToString();
+						angleRowContainer.GetChild(i * j + 1).GetChild(4).GetComponent<Text>().text = boneAngleValues[i, j, 4].ToString();
+						angleRowContainer.GetChild(i * j + 1).GetChild(5).GetComponent<Text>().text = boneAngleValues[i, j, 5].ToString();
 					}
 					else
 					{
-						angleRowContainer.GetChild(i * j).GetChild(1).GetComponent<Text>().text = "NA";
-						angleRowContainer.GetChild(i * j).GetChild(2).GetComponent<Text>().text = "NA";
-						angleRowContainer.GetChild(i * j).GetChild(3).GetComponent<Text>().text = "NA";
-						angleRowContainer.GetChild(i * j).GetChild(4).GetComponent<Text>().text = "NA";
-						angleRowContainer.GetChild(i * j).GetChild(5).GetComponent<Text>().text = "NA";
+						angleRowContainer.GetChild(i * j + 1).GetChild(1).GetComponent<Text>().text = "NA";
+						angleRowContainer.GetChild(i * j + 1).GetChild(2).GetComponent<Text>().text = "NA";
+						angleRowContainer.GetChild(i * j + 1).GetChild(3).GetComponent<Text>().text = "NA";
+						angleRowContainer.GetChild(i * j + 1).GetChild(4).GetComponent<Text>().text = "NA";
+						angleRowContainer.GetChild(i * j + 1).GetChild(5).GetComponent<Text>().text = "NA";
 					}
 				}
 				else
@@ -261,8 +274,10 @@ public class TaskOneController : MonoBehaviour {
 		simulateViewPanel.SetActive(false);
 		graphViewPanel.SetActive(false);
 		heatmapViewPanel.SetActive(false);
+		heatmapQuad.SetActive(false);
 
 		CancelInvoke();
 		StopAllCoroutines();
+		incre = 0;
 	}
 }

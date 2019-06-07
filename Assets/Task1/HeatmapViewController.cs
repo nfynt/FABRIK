@@ -18,24 +18,24 @@ public class HeatmapViewController : MonoBehaviour {
 	{
 	}
 
-	private void Update()
-	{
-		if (Input.GetKeyUp(KeyCode.P))
-		{
-			material = new Material(material);
-			viewObject.material = material;
-			material.SetInt("_Points_Length", positions.Length);
-			material.SetVectorArray("_Points", positions);
-			material.SetVectorArray("_Properties", properties);
-		}
-		else if(positions.Length>0)
-		{
+	//private void Update()
+	//{
+	//	if (Input.GetKeyUp(KeyCode.P))
+	//	{
+	//		material = new Material(material);
+	//		viewObject.material = material;
+	//		material.SetInt("_Points_Length", positions.Length);
+	//		material.SetVectorArray("_Points", positions);
+	//		material.SetVectorArray("_Properties", properties);
+	//	}
+	//	else if(positions.Length>0)
+	//	{
 
-			material.SetInt("_Points_Length", positions.Length);
-			material.SetVectorArray("_Points", positions);
-			material.SetVectorArray("_Properties", properties);
-		}
-	}
+	//		material.SetInt("_Points_Length", positions.Length);
+	//		material.SetVectorArray("_Points", positions);
+	//		material.SetVectorArray("_Properties", properties);
+	//	}
+	//}
 
 	public void UpdateHeatmap(float radius, float[,] distances)
 	{
