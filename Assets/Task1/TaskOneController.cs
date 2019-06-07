@@ -23,6 +23,10 @@ public class TaskOneController : MonoBehaviour {
 	public GameObject rowObject;
 	public GameObject graphWaitPanel;
 
+	[Header("Heatmap panel options")]
+	public GameObject heatWaitPanel;
+	public GameObject heatmapQuad;
+
 	//Simulation params
 	private float simX, simY;
 	//[X,Y]
@@ -33,14 +37,19 @@ public class TaskOneController : MonoBehaviour {
 	private float[,] targetDistValues;
 	private bool allCalculated = false;
 	private int indMid;
-	private ViewMode currMode = ViewMode.Default;
+	public ViewMode currMode = ViewMode.Default;
 
 	private void Start()
 	{
+		ResetGridAndProperties();
 		UpdateViewMode(null);
+	}
+
+	void ResetGridAndProperties()
+	{
 		allCalculated = false;
 		reachability = new bool[gridProp.max * 2 + 1, gridProp.max * 2 + 1];
-		boneAngleValues = new float[gridProp.max * 2 + 1, gridProp.max * 2 + 1, chainRoot.ChainLength()-1];
+		boneAngleValues = new float[gridProp.max * 2 + 1, gridProp.max * 2 + 1, chainRoot.ChainLength() - 1];
 		targetDistValues = new float[gridProp.max * 2 + 1, gridProp.max * 2 + 1];
 
 		indMid = (gridProp.max - gridProp.min) / 2;
@@ -91,9 +100,19 @@ public class TaskOneController : MonoBehaviour {
 			{
 				graphWaitPanel.SetActive(false);
 				UpdateGraphTableEntries();
+			}else if (currMode == ViewMode.HeatMap)
+			{
+				heatWaitPanel.SetActive(false);
+				PrepareHeatMap();
 			}
 		}
 
+	}
+
+	void PrepareHeatMap()
+	{
+		heatmapQuad.SetActive(true);
+		heatmapQuad.GetComponent<HeatmapViewController>().UpdateHeatmap(1f, targetDistValues);
 	}
 
 	void UpdateGraphTableEntries()
@@ -196,17 +215,44 @@ public class TaskOneController : MonoBehaviour {
 				heatmapViewPanel.SetActive(true);
 				if (!allCalculated)
 				{
-					graphWaitPanel.SetActive(true);
+					heatWaitPanel.SetActive(true);
 					simX = simY = gridProp.min;
 					StartCoroutine(SimulateTargetMotion());
 				}
 				else
 				{
-					graphWaitPanel.SetActive(false);
-					
+					heatWaitPanel.SetActive(false);
+					PrepareHeatMap();
 				}
 				break;
 		}
+	}
+
+	public void UpdateGridSize(Dropdown dropdown)
+	{
+		switch (dropdown.value)
+		{
+			case 0: //3
+				gridProp.max = 3;
+				gridProp.min = -3;
+				break;
+			case 1: //5
+				gridProp.max = 5;
+				gridProp.min = -5;
+				break;
+			case 2: //10
+				gridProp.max = 10;
+				gridProp.min = -10;
+				break;
+			case 3: //15
+				gridProp.max = 15;
+				gridProp.min = -15;
+				break;
+		}
+
+		gridProp.UpdateGrid();
+		ResetGridAndProperties();
+		UpdateViewMode(null);
 	}
 
 	void HideAllViewPanel()

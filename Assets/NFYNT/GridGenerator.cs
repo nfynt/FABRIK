@@ -17,8 +17,12 @@ public class GridGenerator : MonoBehaviour {
 
 	}
 
-	private void FixedUpdate()
+	public void UpdateGrid()
 	{
+		for (int i = transform.childCount - 1; i >= 0; i--)
+			Destroy(transform.GetChild(i).gameObject);
+
+		DrawGrid();
 	}
 
 	void DrawGrid()
