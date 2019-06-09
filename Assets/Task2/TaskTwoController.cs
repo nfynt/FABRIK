@@ -3,19 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum ViewMode
-{
-	Default, Simulation, GraphPlot, HeatMap
-}
-
-public class TaskOneController : MonoBehaviour,ITaskController {
+public class TaskTwoController : MonoBehaviour,ITaskController {
 
 	public GameObject defaultViewPanel;
 	public GameObject simulateViewPanel;
 	public GameObject graphViewPanel;
 	public GameObject heatmapViewPanel;
 	public float simWaitTime = 0.05f;
-	public TestIK chainRoot;
+	public NFYNT.NfyntIKFabric nfyntFabrik;
 	public GridGenerator gridProp;
 
 	[Header("Graph panel options")]
@@ -28,7 +23,7 @@ public class TaskOneController : MonoBehaviour,ITaskController {
 	public GameObject heatmapQuad;
 	[Space(10)]
 	public ViewMode currMode = ViewMode.Default;
-
+	public InputField omegaInput;
 	//Simulation params
 	private float simX, simY;
 	//[X,Y]
@@ -55,13 +50,14 @@ public class TaskOneController : MonoBehaviour,ITaskController {
 	{
 		ResetGridAndProperties();
 		UpdateViewMode(null);
+		omegaInput.text = nfyntFabrik.angularVelocity.ToString();
 	}
 
 	void ResetGridAndProperties()
 	{
 		allCalculated = false;
 		reachability = new bool[gridProp.max * 2 + 1, gridProp.max * 2 + 1];
-		boneAngleValues = new float[gridProp.max * 2 + 1, gridProp.max * 2 + 1, chainRoot.ChainLength() - 1];
+		boneAngleValues = new float[gridProp.max * 2 + 1, gridProp.max * 2 + 1, nfyntFabrik.noOfLinks];
 		targetDistValues = new float[gridProp.max * 2 + 1, gridProp.max * 2 + 1];
 
 		indMid = (gridProp.max - gridProp.min) / 2;
@@ -73,16 +69,16 @@ public class TaskOneController : MonoBehaviour,ITaskController {
 		if (incre == 0)
 			incre = 1;
 
-		chainRoot.target.position = new Vector3(simX, 0, simY);
+		nfyntFabrik.targetObj.position = new Vector3(simX, 0, simY);
 
 		yield return new WaitForSeconds(simWaitTime);
 
-		reachability[(int)simX+indMid, (int)simY + indMid] = chainRoot.TargetReachable(ref targetDistValues[(int)simX + indMid, (int)simY + indMid]);
+		reachability[(int)simX+indMid, (int)simY + indMid] = nfyntFabrik.TargetReachable(ref targetDistValues[(int)simX + indMid, (int)simY + indMid]);
 		//Debug.Log(((int)simX + indMid).ToString() + "," + ((int)simY + indMid).ToString() + "--" + 
 		//	reachability[(int)simX + indMid, (int)simY + indMid].ToString()+";"+ targetDistValues[(int)simX + indMid, (int)simY + indMid].ToString());
 
 		int i = 0;
-		float[] linkAngs = chainRoot.GetLinkAngles();
+		float[] linkAngs = nfyntFabrik.GetLinkAngles();
 		
 		foreach (float f in linkAngs)
 		{
@@ -156,11 +152,11 @@ public class TaskOneController : MonoBehaviour,ITaskController {
 					angleRowContainer.GetChild(i * j + 1).GetChild(0).GetComponent<Text>().text = "(" + (i - indMid).ToString() + "," + (j - indMid).ToString() + ")";
 					if (reachability[i, j])
 					{
-						angleRowContainer.GetChild(i * j + 1).GetChild(1).GetComponent<Text>().text = boneAngleValues[i, j, 1].ToString();
-						angleRowContainer.GetChild(i * j + 1).GetChild(2).GetComponent<Text>().text = boneAngleValues[i, j, 2].ToString();
-						angleRowContainer.GetChild(i * j + 1).GetChild(3).GetComponent<Text>().text = boneAngleValues[i, j, 3].ToString();
-						angleRowContainer.GetChild(i * j + 1).GetChild(4).GetComponent<Text>().text = boneAngleValues[i, j, 4].ToString();
-						angleRowContainer.GetChild(i * j + 1).GetChild(5).GetComponent<Text>().text = boneAngleValues[i, j, 5].ToString();
+						angleRowContainer.GetChild(i * j + 1).GetChild(1).GetComponent<Text>().text = boneAngleValues[i, j, 0].ToString();
+						angleRowContainer.GetChild(i * j + 1).GetChild(2).GetComponent<Text>().text = boneAngleValues[i, j, 1].ToString();
+						angleRowContainer.GetChild(i * j + 1).GetChild(3).GetComponent<Text>().text = boneAngleValues[i, j, 2].ToString();
+						angleRowContainer.GetChild(i * j + 1).GetChild(4).GetComponent<Text>().text = boneAngleValues[i, j, 3].ToString();
+						angleRowContainer.GetChild(i * j + 1).GetChild(5).GetComponent<Text>().text = boneAngleValues[i, j, 4].ToString();
 					}
 					else
 					{
@@ -178,11 +174,11 @@ public class TaskOneController : MonoBehaviour,ITaskController {
 					go.transform.GetChild(0).GetComponent<Text>().text = "(" + (i - indMid).ToString() + "," + (j - indMid).ToString() + ")";
 					if (reachability[i, j])
 					{
-						go.transform.GetChild(1).GetComponent<Text>().text = boneAngleValues[i, j, 1].ToString();
-						go.transform.GetChild(2).GetComponent<Text>().text = boneAngleValues[i, j, 2].ToString();
-						go.transform.GetChild(3).GetComponent<Text>().text = boneAngleValues[i, j, 3].ToString();
-						go.transform.GetChild(4).GetComponent<Text>().text = boneAngleValues[i, j, 4].ToString();
-						go.transform.GetChild(5).GetComponent<Text>().text = boneAngleValues[i, j, 5].ToString();
+						go.transform.GetChild(1).GetComponent<Text>().text = boneAngleValues[i, j, 0].ToString();
+						go.transform.GetChild(2).GetComponent<Text>().text = boneAngleValues[i, j, 1].ToString();
+						go.transform.GetChild(3).GetComponent<Text>().text = boneAngleValues[i, j, 2].ToString();
+						go.transform.GetChild(4).GetComponent<Text>().text = boneAngleValues[i, j, 3].ToString();
+						go.transform.GetChild(5).GetComponent<Text>().text = boneAngleValues[i, j, 4].ToString();
 					}
 					else
 					{
@@ -255,27 +251,34 @@ public class TaskOneController : MonoBehaviour,ITaskController {
 	{
 		switch (dropdown.value)
 		{
-			case 0: //3
-				gridProp.max = 3;
-				gridProp.min = -3;
-				break;
-			case 1: //5
+			case 0: //5
 				gridProp.max = 5;
 				gridProp.min = -5;
 				break;
-			case 2: //10
+			case 1: //10
 				gridProp.max = 10;
 				gridProp.min = -10;
 				break;
-			case 3: //15
+			case 2: //15
 				gridProp.max = 15;
 				gridProp.min = -15;
 				break;
+			//case 3: //15
+			//	gridProp.max = 15;
+			//	gridProp.min = -15;
+			//	break;
 		}
 
 		gridProp.UpdateGrid();
 		ResetGridAndProperties();
 		UpdateViewMode(null);
+	}
+
+	public void UpdateAngularVelocity(InputField angularVel)
+	{
+		float val;
+		float.TryParse(angularVel.text,out val);
+		nfyntFabrik.UpdateAngularVelocity(val);
 	}
 
 	void HideAllViewPanel()

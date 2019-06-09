@@ -12,14 +12,20 @@ public class TestIK : FABRIK {
 	private int chainLen;
 	private Transform[] chainLinks;
 
+	float speed = 100.0F;
+
+	public float MoveSpeed
+	{
+		get { return speed; }
+		set { speed = value; }
+	}
+
 	public override void OnFABRIK()
 	{
-		float speed = 100.0F;
-		float step = Time.deltaTime * speed;
 		target.position = new Vector3(target.position.x, 0, target.position.z);
-		FABRIKChain right = GetEndChain("Cylinder (6)_end_effector");
+		FABRIKChain end = GetEndChain("Cylinder (6)_end_effector");
 
-		right.Target = Vector3.MoveTowards(right.EndEffector.Position, target.position, step);
+		end.Target = Vector3.MoveTowards(end.EndEffector.Position, target.position, speed*Time.deltaTime);
 
 		UpdateLinks();
 		//if (Input.GetKeyDown(KeyCode.P))

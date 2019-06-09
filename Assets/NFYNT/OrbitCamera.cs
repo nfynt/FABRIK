@@ -4,7 +4,7 @@ using System.Collections;
 [AddComponentMenu("Nfynt/OrbitCamera")]
 public class OrbitCamera : MonoBehaviour
 {
-	public TaskOneController taskController;
+	public ITaskController taskController;
 	public Transform target;
 	public float distance = 5.0f;
 	public float xSpeed = 120.0f;
@@ -29,7 +29,7 @@ public class OrbitCamera : MonoBehaviour
 
 	void LateUpdate()
 	{
-		if (Input.GetMouseButton(1) && target && taskController.currMode != ViewMode.GraphPlot)
+		if (Input.GetMouseButton(1) && target && taskController.GetCurrMode() != ViewMode.GraphPlot)
 		{
 			x += Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
 			y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
@@ -44,7 +44,7 @@ public class OrbitCamera : MonoBehaviour
 			transform.rotation = rotation;
 		}
 
-		if(target && Input.GetAxis("Mouse ScrollWheel") != 0 && taskController.currMode!=ViewMode.GraphPlot)
+		if(target && Input.GetAxis("Mouse ScrollWheel") != 0 && taskController.GetCurrMode()!=ViewMode.GraphPlot)
 		{
 			distance = Mathf.Clamp(distance - Input.GetAxis("Mouse ScrollWheel") * 5, distanceMin, distanceMax);
 

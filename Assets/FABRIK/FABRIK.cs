@@ -16,7 +16,7 @@ public class FABRIK : MonoBehaviour
 	{
 		CreateSystem(transform);
 
-		//AssetDatabase.SaveAssets();
+		AssetDatabase.SaveAssets();
 	}
 
 	protected void CreateSystem(Transform transform)
@@ -145,6 +145,7 @@ public class FABRIK : MonoBehaviour
 
 	public void Update()
 	{
+		//sets the target for end effector for FABRIKChain
 		OnFABRIK();
 
 		Solve();

@@ -2,135 +2,158 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections;
 
+[CanEditMultipleObjects]
 [CustomEditor(typeof(FABRIKEffector))]
 public class FABRIKEffectorEditor : Editor
 {
-    private Quaternion rotation;
-    private bool editingAxis;
+	private Quaternion rotation;
+	private bool editingAxis;
 
-    public void OnEnable()
-    {
-        FABRIKEffector effector = target as FABRIKEffector;
-        Transform transform = effector.transform;
+	public void OnEnable()
+	{
+		FABRIKEffector effector = target as FABRIKEffector;
+		Transform transform = effector.transform;
 
-        SerializedObject serializedObject = new SerializedObject(target);
-        SerializedProperty upAxisConstraintProperty = serializedObject.FindProperty("upAxisConstraint");
-        SerializedProperty forwardAxisConstraintProperty = serializedObject.FindProperty("forwardAxisConstraint");
+		SerializedObject serializedObject = new SerializedObject(target);
+		SerializedProperty upAxisConstraintProperty = serializedObject.FindProperty("upAxisConstraint");
+		SerializedProperty forwardAxisConstraintProperty = serializedObject.FindProperty("forwardAxisConstraint");
 
-        rotation = transform.rotation * Quaternion.LookRotation(forwardAxisConstraintProperty.vector3Value, upAxisConstraintProperty.vector3Value);
-        editingAxis = false;
-    }
+		rotation = transform.rotation * Quaternion.LookRotation(forwardAxisConstraintProperty.vector3Value, upAxisConstraintProperty.vector3Value);
+		editingAxis = false;
+	}
 
-    public override void OnInspectorGUI()
-    {
-        bool modified = false;
+	public override void OnInspectorGUI()
+	{
+		bool modified = false;
 
-        DrawDefaultInspector();
+		DrawDefaultInspector();
 
-        SerializedObject serializedObject = new SerializedObject(target);
+		SerializedObject serializedObject = new SerializedObject(target);
 
-        serializedObject.Update();
+		serializedObject.Update();
 
-        SerializedProperty swingConstraintProperty = serializedObject.FindProperty("swingConstraint");
-        SerializedProperty twistConstraintProperty = serializedObject.FindProperty("twistConstraint");
+		SerializedProperty swingConstraintProperty = serializedObject.FindProperty("swingConstraint");
+		SerializedProperty twistConstraintProperty = serializedObject.FindProperty("twistConstraint");
+		SerializedProperty angularVelConstraintProperty = serializedObject.FindProperty("angularConstrinat");
 
-        bool swingToggle = EditorGUILayout.Toggle("Swing Constraint", !float.IsNaN(swingConstraintProperty.floatValue));
+		bool swingToggle = EditorGUILayout.Toggle("Swing Constraint", !float.IsNaN(swingConstraintProperty.floatValue));
 
-        float swingConstraint;
+		float swingConstraint;
 
-        if (swingToggle)
-        {
-            swingConstraint = Mathf.Clamp(EditorGUILayout.FloatField(swingConstraintProperty.floatValue), 0.0F, 360.0F);
+		if (swingToggle)
+		{
+			swingConstraint = Mathf.Clamp(EditorGUILayout.FloatField(swingConstraintProperty.floatValue), 0.0F, 360.0F);
 
-            if (float.IsInfinity(swingConstraint) || float.IsNaN(swingConstraint))
-            {
-                swingConstraint = 0.0F;
-            }
-        }
-        else
-        {
-            swingConstraint = float.NaN;
-        }
+			if (float.IsInfinity(swingConstraint) || float.IsNaN(swingConstraint))
+			{
+				swingConstraint = 0.0F;
+			}
+		}
+		else
+		{
+			swingConstraint = float.NaN;
+		}
 
-        modified = modified || swingConstraint != swingConstraintProperty.floatValue;
+		modified = modified || swingConstraint != swingConstraintProperty.floatValue;
 
-        bool twistToggle = EditorGUILayout.Toggle("Twist Constraint", !float.IsNaN(twistConstraintProperty.floatValue));
+		bool twistToggle = EditorGUILayout.Toggle("Twist Constraint", !float.IsNaN(twistConstraintProperty.floatValue));
 
-        float twistConstraint;
+		float twistConstraint;
 
-        if (twistToggle)
-        {
-            twistConstraint = Mathf.Clamp(EditorGUILayout.FloatField(twistConstraintProperty.floatValue), 0.0F, 360.0F);
+		if (twistToggle)
+		{
+			twistConstraint = Mathf.Clamp(EditorGUILayout.FloatField(twistConstraintProperty.floatValue), 0.0F, 360.0F);
 
-            if (float.IsInfinity(twistConstraint) || float.IsNaN(twistConstraint))
-            {
-                twistConstraint = 0.0F;
-            }
-        }
-        else
-        {
-            twistConstraint = float.NaN;
-        }
+			if (float.IsInfinity(twistConstraint) || float.IsNaN(twistConstraint))
+			{
+				twistConstraint = 0.0F;
+			}
+		}
+		else
+		{
+			twistConstraint = float.NaN;
+		}
 
-        modified = modified || twistConstraint != twistConstraintProperty.floatValue;
+		modified = modified || twistConstraint != twistConstraintProperty.floatValue;
 
-        if (modified)
-        {
-            swingConstraintProperty.floatValue = swingConstraint;
-            twistConstraintProperty.floatValue = twistConstraint;
+		bool angularVelToggle = EditorGUILayout.Toggle("Threshold Angular Velocity", !float.IsNaN(angularVelConstraintProperty.floatValue));
+		
+		float angularConstraint;
 
-            serializedObject.ApplyModifiedProperties();
+		if (angularVelToggle)
+		{
+			angularConstraint = EditorGUILayout.FloatField(angularVelConstraintProperty.floatValue);
 
-            AssetDatabase.SaveAssets();
-        }
+			if (float.IsInfinity(angularConstraint) || float.IsNaN(angularConstraint))
+			{
+				angularConstraint = 0.0F;
+			}
+		}
+		else
+		{
+			angularConstraint = float.NaN;
+		}
 
-        if(GUILayout.Button("Edit Axis of Constraint"))
-        {
-            Tools.current = Tool.None;
+		modified = modified || angularConstraint != angularVelConstraintProperty.floatValue;
 
-            editingAxis = true;
-        }
-    }
+		if (modified)
+		{
+			swingConstraintProperty.floatValue = swingConstraint;
+			twistConstraintProperty.floatValue = twistConstraint;
+			angularVelConstraintProperty.floatValue = angularConstraint;
 
-    public void OnSceneGUI()
-    {
-        if (editingAxis)
-        {
-            if (Tools.current != Tool.None)
-            {
-                editingAxis = false;
-            }
-            else
-            {
-                FABRIKEffector effector = target as FABRIKEffector;
-                Transform transform = effector.transform;
+			serializedObject.ApplyModifiedProperties();
 
-                EditorGUI.BeginChangeCheck();
+			AssetDatabase.SaveAssets();
+		}
 
-                Quaternion new_rotation = Handles.RotationHandle(rotation, transform.position);
+		if(GUILayout.Button("Edit Axis of Constraint"))
+		{
+			Tools.current = Tool.None;
 
-                Handles.color = Handles.yAxisColor;
-                Handles.ArrowHandleCap(0, transform.position, Quaternion.LookRotation(new_rotation * Vector3.up), 0.5F, EventType.Repaint);
+			editingAxis = true;
+		}
+	}
 
-                Handles.color = Handles.zAxisColor;
-                Handles.ArrowHandleCap(0, transform.position, new_rotation, 1.0F, EventType.Repaint);
+	public void OnSceneGUI()
+	{
+		if (editingAxis)
+		{
+			if (Tools.current != Tool.None)
+			{
+				editingAxis = false;
+			}
+			else
+			{
+				FABRIKEffector effector = target as FABRIKEffector;
+				Transform transform = effector.transform;
 
-                if (EditorGUI.EndChangeCheck())
-                {
-                    rotation = new_rotation;
+				EditorGUI.BeginChangeCheck();
 
-                    SerializedObject serializedObject = new SerializedObject(target);
-                    SerializedProperty upAxisConstraintProperty = serializedObject.FindProperty("upAxisConstraint");
-                    SerializedProperty forwardAxisConstraintProperty = serializedObject.FindProperty("forwardAxisConstraint");
+				Quaternion new_rotation = Handles.RotationHandle(rotation, transform.position);
 
-                    upAxisConstraintProperty.vector3Value = Quaternion.Inverse(transform.rotation) * new_rotation * Vector3.up;
-                    forwardAxisConstraintProperty.vector3Value = Quaternion.Inverse(transform.rotation) * new_rotation * Vector3.forward;
+				Handles.color = Handles.yAxisColor;
+				Handles.ArrowHandleCap(0, transform.position, Quaternion.LookRotation(new_rotation * Vector3.up), 0.5F, EventType.Repaint);
 
-                    serializedObject.ApplyModifiedProperties();
+				Handles.color = Handles.zAxisColor;
+				Handles.ArrowHandleCap(0, transform.position, new_rotation, 1.0F, EventType.Repaint);
 
-                    AssetDatabase.SaveAssets();
-                }
-            }
-        }
-    }
+				if (EditorGUI.EndChangeCheck())
+				{
+					rotation = new_rotation;
+
+					SerializedObject serializedObject = new SerializedObject(target);
+					SerializedProperty upAxisConstraintProperty = serializedObject.FindProperty("upAxisConstraint");
+					SerializedProperty forwardAxisConstraintProperty = serializedObject.FindProperty("forwardAxisConstraint");
+
+					upAxisConstraintProperty.vector3Value = Quaternion.Inverse(transform.rotation) * new_rotation * Vector3.up;
+					forwardAxisConstraintProperty.vector3Value = Quaternion.Inverse(transform.rotation) * new_rotation * Vector3.forward;
+
+					serializedObject.ApplyModifiedProperties();
+
+					AssetDatabase.SaveAssets();
+				}
+			}
+		}
+	}
 }

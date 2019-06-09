@@ -1283,6 +1283,7 @@ MonoBehaviour:
   forwardAxisConstraint: {x: 0, y: 0, z: 1}
   swingConstraint: NaN
   twistConstraint: NaN
+  angularVelocity: NaN
 --- !u!23 &483439044
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1618,6 +1619,7 @@ MonoBehaviour:
   forwardAxisConstraint: {x: 0, y: 0, z: 1}
   swingConstraint: NaN
   twistConstraint: NaN
+  angularVelocity: NaN
 --- !u!23 &583472692
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3452,6 +3454,7 @@ MonoBehaviour:
   forwardAxisConstraint: {x: 0, y: 0, z: 1}
   swingConstraint: NaN
   twistConstraint: NaN
+  angularVelocity: NaN
 --- !u!23 &1416524696
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3991,6 +3994,7 @@ MonoBehaviour:
   forwardAxisConstraint: {x: 0, y: 0, z: 1}
   swingConstraint: NaN
   twistConstraint: NaN
+  angularVelocity: NaN
 --- !u!114 &1578345090
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4410,6 +4414,7 @@ MonoBehaviour:
   forwardAxisConstraint: {x: 0, y: 0, z: 1}
   swingConstraint: NaN
   twistConstraint: NaN
+  angularVelocity: NaN
 --- !u!23 &1656638126
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5629,6 +5634,7 @@ MonoBehaviour:
   forwardAxisConstraint: {x: 0, y: 0, z: 1}
   swingConstraint: NaN
   twistConstraint: NaN
+  angularVelocity: NaN
 --- !u!23 &1988556203
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5786,6 +5792,7 @@ MonoBehaviour:
   forwardAxisConstraint: {x: 0, y: 0, z: 1}
   swingConstraint: NaN
   twistConstraint: NaN
+  angularVelocity: NaN
 --- !u!23 &2077276172
 MeshRenderer:
   m_ObjectHideFlags: 0
