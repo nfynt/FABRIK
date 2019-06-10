@@ -57,7 +57,7 @@ public class TaskOneController : MonoBehaviour,ITaskController {
 		UpdateViewMode(null);
 	}
 
-	void ResetGridAndProperties()
+	public void ResetGridAndProperties()
 	{
 		allCalculated = false;
 		reachability = new bool[gridProp.max * 2 + 1, gridProp.max * 2 + 1];

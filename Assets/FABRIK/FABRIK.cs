@@ -1,5 +1,7 @@
 using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using System.Collections;
 using System.Collections.Generic;
 
@@ -12,6 +14,7 @@ public class FABRIK : MonoBehaviour
 	public List<FABRIKChain> chains = new List<FABRIKChain>();
 	private Dictionary<string, FABRIKChain> endChains = new Dictionary<string, FABRIKChain>();
 
+#if UNITY_EDITOR
 	public void CreateSystem()
 	{
 		CreateSystem(transform);
@@ -65,6 +68,7 @@ public class FABRIK : MonoBehaviour
 			CreateSystem(child);
 		}
 	}
+#endif
 
 	public void Awake()
 	{

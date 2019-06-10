@@ -204,7 +204,7 @@ namespace NFYNT
 				{
 					//required velocity is greater than threshold
 					//Debug.Log(gameObject.name + "cal angular vel:" + angVel + "and threshold: " + angularVelocity * Time.deltaTime);
-					float theta = theta1 + Mathf.Sign(phi) * angularVelocity * Time.deltaTime;
+					float theta = theta1 + angularVelocity * Time.deltaTime;
 					
 					//caliberated pos
 					positions[i] = new Vector3(linkLengths[i-1] * Mathf.Cos(theta), 0, linkLengths[i-1] * Mathf.Sin(theta));

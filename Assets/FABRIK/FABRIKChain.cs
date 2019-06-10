@@ -4,164 +4,170 @@ using System.Collections.Generic;
 
 public class FABRIKChain
 {
-    private FABRIKChain parent = null;
+	private FABRIKChain parent = null;
 
-    private List<FABRIKChain> children = new List<FABRIKChain>();
+	private List<FABRIKChain> children = new List<FABRIKChain>();
 
-    private List<FABRIKEffector> effectors;
+	private List<FABRIKEffector> effectors;
 
-    private int layer;
+	private int layer;
 
-    private float summed_weight;
+	private float summed_weight;
 
-    public float sqrThreshold = 0.01F;
+	public float sqrThreshold = 0.01F;
 
-    public FABRIKChain(FABRIKChain parent, List<FABRIKEffector> effectors, int layer)
-    {
-        for (int i = 1; i < effectors.Count; i++)
-        {
-            effectors[i - 1].Length = Vector3.Distance(effectors[i].transform.position, effectors[i - 1].transform.position);
-        }
+	public FABRIKChain(FABRIKChain parent, List<FABRIKEffector> effectors, int layer)
+	{
+		for (int i = 1; i < effectors.Count; i++)
+		{
+			effectors[i - 1].Length = Vector3.Distance(effectors[i].transform.position, effectors[i - 1].transform.position);
+		}
 
-        this.effectors = new List<FABRIKEffector>(effectors);
+		this.effectors = new List<FABRIKEffector>(effectors);
 
-        this.layer = layer;
+		this.layer = layer;
 
-        // Add this chain to the parent chain's children
-        if (parent != null)
-        {
-            this.parent = parent;
+		// Add this chain to the parent chain's children
+		if (parent != null)
+		{
+			this.parent = parent;
 
-            parent.children.Add(this);
-        }
-    }
+			parent.children.Add(this);
+		}
+	}
 
-    public void CalculateSummedWeight()
-    {
-        summed_weight = 0.0F;
+	public void CalculateSummedWeight()
+	{
+		summed_weight = 0.0F;
 
-        foreach (FABRIKChain child in children)
-        {
-            summed_weight += child.EndEffector.Weight;
-        }
-    }
-    
-    public void Backward()
-    {
-        // Store the original position to be reset below
-        Vector3 origin = BaseEffector.Position;
+		foreach (FABRIKChain child in children)
+		{
+			summed_weight += child.EndEffector.Weight;
+		}
+	}
+	
+	public void Backward()
+	{
+		// Store the original position to be reset below
+		Vector3 origin = BaseEffector.Position;
 
-        // Sub-base, average for centroid
-        if (children.Count > 1)
-        {
-            Target /= summed_weight;
-        }
+		// Sub-base, average for centroid
+		if (children.Count > 1)
+		{
+			Target /= summed_weight;
+		}
 
-        if ((EndEffector.Position - Target).sqrMagnitude > sqrThreshold)
-        {
-            // Set the end effector Position to Target to calculate the Backward iteration
-            EndEffector.Position = Target;
+		if ((EndEffector.Position - Target).sqrMagnitude > sqrThreshold)
+		{
+			// Set the end effector Position to Target to calculate the Backward iteration
+			EndEffector.Position = Target;
 
-            for (int i = effectors.Count - 2; i >= 0; i--)
-            {
-                Vector3 direction = Vector3.Normalize(effectors[i].Position - effectors[i + 1].Position);
+			for (int i = effectors.Count - 2; i >= 0; i--)
+			{
+				Vector3 direction = Vector3.Normalize(effectors[i].Position - effectors[i + 1].Position);
 
-                effectors[i].Position = effectors[i + 1].Position + direction * effectors[i].Length;
-            }
-        }
+				effectors[i].Position = effectors[i + 1].Position + direction * effectors[i].Length;
+			}
+		}
 
-        // Increment parent sub-base's target, to be averaged as above
-        if (parent != null)
-        {
-            parent.Target += BaseEffector.Position * EndEffector.Weight;
-        }
+		// Increment parent sub-base's target, to be averaged as above
+		if (parent != null)
+		{
+			parent.Target += BaseEffector.Position * EndEffector.Weight;
+		}
 
-        // Reset initial effector to origin
-        BaseEffector.Position = origin;
-    }
+		// Reset initial effector to origin
+		BaseEffector.Position = origin;
+	}
 
-    public void Forward()
-    {
-        effectors[1].Position = BaseEffector.Position + BaseEffector.Rotation * Vector3.forward * BaseEffector.Length;
+	public void Forward()
+	{
+		effectors[1].Position = BaseEffector.Position + BaseEffector.Rotation * Vector3.forward * BaseEffector.Length;
 
-        for (int i = 2; i < effectors.Count; i++)
-        {
-            Vector3 direction = Vector3.Normalize(effectors[i].Position - effectors[i - 1].Position);
-                        
-            effectors[i - 1].ApplyConstraints(direction);
+		for (int i = 2; i < effectors.Count; i++)
+		{
+			Vector3 direction = Vector3.Normalize(effectors[i].Position - effectors[i - 1].Position);
+						
+			effectors[i - 1].ApplyConstraints(direction);
 
-            effectors[i].Position = effectors[i - 1].Position + effectors[i - 1].Rotation * Vector3.forward * effectors[i - 1].Length;
-        }
+			effectors[i].Position = effectors[i - 1].Position + effectors[i - 1].Rotation * Vector3.forward * effectors[i - 1].Length;
+		}
 
-        // This is a sub-base, reset Target to zero to be recalculated in Backward
-        if (children.Count != 0)
-        {
-            Target = Vector3.zero;
+		//Apply angular constraint
+		for(int i=1;i<effectors.Count;i++)
+		{
+			effectors[i].ApplyAngularVelocityConstraint();
+		}
 
-            // In order to constrain a sub-base end effector, we must average the directions of its children
-            Vector3 direction = Vector3.zero;
+		// This is a sub-base, reset Target to zero to be recalculated in Backward
+		if (children.Count != 0)
+		{
+			Target = Vector3.zero;
 
-            foreach(FABRIKChain child in children)
-            {
-                direction += Vector3.Normalize(child.effectors[1].Position - EndEffector.Position);
-            }
+			// In order to constrain a sub-base end effector, we must average the directions of its children
+			Vector3 direction = Vector3.zero;
 
-            direction /= (float)children.Count;
+			foreach(FABRIKChain child in children)
+			{
+				direction += Vector3.Normalize(child.effectors[1].Position - EndEffector.Position);
+			}
 
-            EndEffector.ApplyConstraints(direction);
-        }
-    }
+			direction /= (float)children.Count;
 
-    public void ForwardMulti()
-    {
-        Forward();
+			EndEffector.ApplyConstraints(direction);
+		}
+	}
 
-        for (int i = 1; i < effectors.Count; i++)
-        {
-            effectors[i].UpdateTransform();
-        }
+	public void ForwardMulti()
+	{
+		Forward();
 
-        foreach (FABRIKChain child in children)
-        {
-            child.ForwardMulti();
-        }
-    }
+		for (int i = 1; i < effectors.Count; i++)
+		{
+			effectors[i].UpdateTransform();
+		}
 
-    public bool IsEndChain
-    {
-        get
-        {
-            return EndEffector.transform.childCount == 0;
-        }
-    }
+		foreach (FABRIKChain child in children)
+		{
+			child.ForwardMulti();
+		}
+	}
 
-    public int Layer
-    {
-        get
-        {
-            return layer;
-        }
-    }
+	public bool IsEndChain
+	{
+		get
+		{
+			return EndEffector.transform.childCount == 0;
+		}
+	}
 
-    public Vector3 Target
-    {
-        get;
-        set;
-    }
+	public int Layer
+	{
+		get
+		{
+			return layer;
+		}
+	}
 
-    public FABRIKEffector BaseEffector
-    {
-        get
-        {
-            return effectors[0];
-        }
-    }
+	public Vector3 Target
+	{
+		get;
+		set;
+	}
 
-    public FABRIKEffector EndEffector
-    {
-        get
-        {
-            return effectors[effectors.Count - 1];
-        }
-    }
+	public FABRIKEffector BaseEffector
+	{
+		get
+		{
+			return effectors[0];
+		}
+	}
+
+	public FABRIKEffector EndEffector
+	{
+		get
+		{
+			return effectors[effectors.Count - 1];
+		}
+	}
 }

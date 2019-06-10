@@ -1344,7 +1344,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: angular velocity
+  m_Text: linear velocity
 --- !u!222 &436335082
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4389,9 +4389,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 342f126ee36fc9242867b2a2b4926da1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  thresholdAngularVelocity: 2
+  thresholdAngularVelocity: 0
+  linearVelocity: 100
   omegaInp: {fileID: 646531647}
   testIK: {fileID: 1578345090}
+  taskController: {fileID: 1528308221}
 --- !u!1 &1613876385
 GameObject:
   m_ObjectHideFlags: 0
