@@ -149,8 +149,10 @@ public class FABRIKEffector : MonoBehaviour
 
 	public void ApplyAngularVelocityConstraint()
 	{
-		if (float.IsNaN(angularConstrinat) || angularConstrinat == 0)
+		if (float.IsNaN(angularConstrinat) || angularConstrinat == 0 || !AngularConstrained)
 			return;
+
+		//Debug.Log("bef_"+gameObject.name + "_" + Position);
 
 		float theta1 = Mathf.Acos(transform.position.x / parent.Length);
 		float theta2 = Mathf.Acos(this.Position.x / parent.Length);
@@ -159,7 +161,7 @@ public class FABRIKEffector : MonoBehaviour
 		
 		float angVel = phi / Time.deltaTime;
 		//Debug.Log(gameObject.name+"Phi: " + phi);
-
+		Debug.Log(angVel.ToString() + "____" + (AngularConstraint * Time.deltaTime).ToString());
 		if (!float.IsNaN(angVel) && Mathf.Abs(angVel) > Mathf.Abs(AngularConstraint * Time.deltaTime))
 		{
 			//required velocity is greater than threshold
@@ -170,14 +172,22 @@ public class FABRIKEffector : MonoBehaviour
 			this.Position = new Vector3(parent.Length * Mathf.Cos(theta), 0, parent.Length * Mathf.Sin(theta));
 
 			//CheckNewPositionLength(newPosition);
-			if (transform.childCount>0)
+
+			//adjust next link for updated join
+			if (transform.childCount > 0)
 			{
-				//adjust next link for updated join
-				FABRIKEffector child = transform.GetChild(0).GetComponent<FABRIKEffector>();
-				child.Position = Position + Vector3.Normalize(Position - child.position) * Length;
+				Transform child = transform.GetChild(0);
+				Vector3 parentPos = Position;
+				while (child != null)
+				{
+					FABRIKEffector fe = child.GetComponent<FABRIKEffector>();
+					parentPos = fe.Position = parentPos + Vector3.Normalize(parentPos - child.position) * Length;
+				}
 			}
 		}
 
+		if (parent != null)
+			Debug.Log("after_" + gameObject.name + "_" + Vector3.Distance(Position, parent.Position));
 	}
 
 	void Awake()

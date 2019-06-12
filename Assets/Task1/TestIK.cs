@@ -25,9 +25,10 @@ public class TestIK : FABRIK {
 		target.position = new Vector3(target.position.x, 0, target.position.z);
 		FABRIKChain end = GetEndChain("Cylinder (6)_end_effector");
 
-		end.Target = Vector3.MoveTowards(end.EndEffector.Position, target.position, speed*Time.deltaTime);
+		end.Target = Vector3.MoveTowards(end.EndEffector.Position, target.position, speed * Time.deltaTime);
 
 		UpdateLinks();
+
 		//if (Input.GetKeyDown(KeyCode.P))
 		//{
 		//	float dist = 0f;

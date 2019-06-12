@@ -149,10 +149,13 @@ public class FABRIK : MonoBehaviour
 
 	public void Update()
 	{
-		//sets the target for end effector for FABRIKChain
-		OnFABRIK();
+		if (Input.GetKey(KeyCode.P))
+		{
+			//sets the target for end effector for FABRIKChain
+			OnFABRIK();
 
-		Solve();
+			Solve();
+		}
 	}
 
 	public virtual void OnFABRIK()

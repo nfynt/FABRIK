@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Test : MonoBehaviour {
 	
-	[Tooltip("velocity in degrees")]
+	[Tooltip("velocity in radians")]
 	public float thresholdAngularVelocity = 5f;
 	public float linearVelocity = 100f;
 	public InputField omegaInp;
@@ -20,12 +20,12 @@ public class Test : MonoBehaviour {
 
 	public void UpdateThreaholdAngularVelocity()
 	{
-		//float.TryParse(omegaInp.text, out thresholdAngularVelocity);
-		float.TryParse(omegaInp.text, out linearVelocity);
+		float.TryParse(omegaInp.text, out thresholdAngularVelocity);
+		//float.TryParse(omegaInp.text, out linearVelocity);
 
 		foreach (FABRIKEffector fe in FindObjectsOfType<FABRIKEffector>())
 		{
-			if (fe.transform == transform)
+			if (fe.transform == transform || fe.Length==5)
 				continue;
 			if (thresholdAngularVelocity == 0)
 				fe.angularConstrinat = float.NaN;

@@ -4389,7 +4389,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 342f126ee36fc9242867b2a2b4926da1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  thresholdAngularVelocity: 0
+  thresholdAngularVelocity: 0.1
   linearVelocity: 100
   omegaInp: {fileID: 646531647}
   testIK: {fileID: 1578345090}
