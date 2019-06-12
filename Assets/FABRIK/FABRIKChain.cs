@@ -94,10 +94,10 @@ public class FABRIKChain
 		}
 
 		//Apply angular constraint
-		for(int i=1;i<effectors.Count;i++)
-		{
-			effectors[i].ApplyAngularVelocityConstraint();
-		}
+		//for(int i=1;i<effectors.Count;i++)
+		//{
+		//	effectors[i].ApplyAngularVelocityConstraint();
+		//}
 
 		// This is a sub-base, reset Target to zero to be recalculated in Backward
 		if (children.Count != 0)

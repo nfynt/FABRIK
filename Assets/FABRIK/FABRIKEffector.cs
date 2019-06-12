@@ -109,6 +109,36 @@ public class FABRIKEffector : MonoBehaviour
 	{
 		if (parent)
 		{
+
+			//Angular Veclocity Constraint
+
+			if (AngularConstrained)
+			{
+				float theta1 = Mathf.Acos(transform.position.x / parent.Length);
+				float theta2 = Mathf.Acos(this.Position.x / parent.Length);
+
+				float phi = Vector3.SignedAngle(transform.position, Position, upAxisConstraint);	//in deg
+				//theta2 - theta1;    //in rad
+
+				float angVel = phi * Time.deltaTime;
+				if (!float.IsNaN(angVel) && Mathf.Abs(angVel) > Mathf.Abs(AngularConstraint * Time.deltaTime))
+				{
+					//float theta = theta1 + Mathf.Sign(phi)* AngularConstraint * Time.deltaTime;
+					//swingConstraint = theta*Mathf.Rad2Deg;
+					//caliberated pos
+					//this.Position = parent.Position + new Vector3(parent.Length * Mathf.Cos(theta), 0, parent.Length * Mathf.Sin(theta));
+					Position = Quaternion.AngleAxis(Mathf.Sign(phi)*angularConstrinat*Time.deltaTime, upAxisConstraint) * transform.position;
+					
+				}
+				else
+				{
+					//swingConstraint = float.NaN;
+				}
+			}
+			else
+			{
+				//no limit of angular velocity
+			}
 			// Neither axis is constrained; set to LookRotation
 			if (!SwingConstrained && !TwistConstrained)
 			{
@@ -147,49 +177,7 @@ public class FABRIKEffector : MonoBehaviour
 		}
 	}
 
-	public void ApplyAngularVelocityConstraint()
-	{
-		if (float.IsNaN(angularConstrinat) || angularConstrinat == 0 || !AngularConstrained)
-			return;
-
-		//Debug.Log("bef_"+gameObject.name + "_" + Position);
-
-		float theta1 = Mathf.Acos(transform.position.x / parent.Length);
-		float theta2 = Mathf.Acos(this.Position.x / parent.Length);
-
-		float phi = theta2 - theta1;    //in rad
-		
-		float angVel = phi / Time.deltaTime;
-		//Debug.Log(gameObject.name+"Phi: " + phi);
-		Debug.Log(angVel.ToString() + "____" + (AngularConstraint * Time.deltaTime).ToString());
-		if (!float.IsNaN(angVel) && Mathf.Abs(angVel) > Mathf.Abs(AngularConstraint * Time.deltaTime))
-		{
-			//required velocity is greater than threshold
-			//Debug.Log(gameObject.name + "cal angular vel:" + angVel + "and threshold: " + angularVelocity * Time.deltaTime);
-			float theta = theta1 + AngularConstraint * Time.deltaTime;
-
-			//caliberated pos
-			this.Position = new Vector3(parent.Length * Mathf.Cos(theta), 0, parent.Length * Mathf.Sin(theta));
-
-			//CheckNewPositionLength(newPosition);
-
-			//adjust next link for updated join
-			if (transform.childCount > 0)
-			{
-				Transform child = transform.GetChild(0);
-				Vector3 parentPos = Position;
-				while (child != null)
-				{
-					FABRIKEffector fe = child.GetComponent<FABRIKEffector>();
-					parentPos = fe.Position = parentPos + Vector3.Normalize(parentPos - child.position) * Length;
-				}
-			}
-		}
-
-		if (parent != null)
-			Debug.Log("after_" + gameObject.name + "_" + Vector3.Distance(Position, parent.Position));
-	}
-
+	
 	void Awake()
 	{
 		parent = transform.parent != null ? transform.parent.gameObject.GetComponent<FABRIKEffector>() : null;

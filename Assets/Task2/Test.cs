@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Test : MonoBehaviour {
 	
-	[Tooltip("velocity in radians")]
+	[Tooltip("velocity in degrees")]
 	public float thresholdAngularVelocity = 5f;
 	public float linearVelocity = 100f;
 	public InputField omegaInp;
@@ -30,7 +30,7 @@ public class Test : MonoBehaviour {
 			if (thresholdAngularVelocity == 0)
 				fe.angularConstrinat = float.NaN;
 			else
-				fe.angularConstrinat = thresholdAngularVelocity;
+				fe.angularConstrinat = Mathf.Abs(thresholdAngularVelocity);
 		}
 
 		testIK.MoveSpeed = linearVelocity;

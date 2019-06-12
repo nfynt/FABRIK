@@ -2523,6 +2523,11 @@ Prefab:
       propertyPath: SnapBackStrength
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114628055200976324, guid: eadffcc2b04368e428238abdaa42c0e0,
+        type: 2}
+      propertyPath: angularVelocity
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: eadffcc2b04368e428238abdaa42c0e0, type: 2}
   m_IsPrefabParent: 0

@@ -34,6 +34,7 @@ namespace NFYNT
 		protected float totalLength;
 		protected Transform[] joints;
 		protected Vector3[] positions;
+		protected float[] dlens;
 		//private Vector3 targetPos;
 		protected Vector3[] startDirection;
 		protected Quaternion[] startRotationJoint;
@@ -54,6 +55,7 @@ namespace NFYNT
 			joints = new Transform[noOfLinks + 1];
 			positions = new Vector3[noOfLinks + 1];
 			linkLengths = new float[noOfLinks];
+			dlens = new float[noOfLinks+1];
 			startDirection = new Vector3[noOfLinks + 1];
 			startRotationJoint = new Quaternion[noOfLinks + 1];
 			
@@ -195,27 +197,30 @@ namespace NFYNT
 				float theta2 = Mathf.Acos(positions[i].x / linkLengths[i-1]);
 
 				float phi = theta2 - theta1;    //in rad
-
-				//float angVel = AngularSpeed / (parent.Length);
+				
 				float angVel = phi / Time.deltaTime;
 				//Debug.Log(gameObject.name+"Phi: " + phi);
 				
 				if (!float.IsNaN(angVel) && Mathf.Abs(angVel) > Mathf.Abs(angularVelocity * Time.deltaTime))
 				{
-					//required velocity is greater than threshold
-					//Debug.Log(gameObject.name + "cal angular vel:" + angVel + "and threshold: " + angularVelocity * Time.deltaTime);
 					float theta = theta1 + angularVelocity * Time.deltaTime;
 					
 					//caliberated pos
-					positions[i] = new Vector3(linkLengths[i-1] * Mathf.Cos(theta), 0, linkLengths[i-1] * Mathf.Sin(theta));
-					
+					positions[i] = positions[i-1] + new Vector3(linkLengths[i-1] * Mathf.Cos(theta), 0, linkLengths[i-1] * Mathf.Sin(theta));
+
 					//CheckNewPositionLength(newPosition);
 					if (i + 1 < joints.Length)
 					{
 						//adjust next link for updated join
-						positions[i + 1] = positions[i] + Vector3.Normalize(positions[i] - positions[i+1]) * linkLengths[i];
+						positions[i + 1] = positions[i] + Vector3.Normalize(positions[i] - positions[i + 1]) * linkLengths[i];
 					}
+
 				}
+				else
+				{
+					//positions[i] = positions[i - 1] + Vector3.Normalize(positions[i - 1] - positions[i]) * linkLengths[i - 1];
+				}
+				dlens[i] = Vector3.Distance(positions[i], positions[i - 1]);
 			}
 
 		}
